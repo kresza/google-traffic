@@ -43,10 +43,11 @@ def calculate_route(api_key, route_url, log_response=False):
     try:
         gmaps = googlemaps.Client(key=api_key)
 
-        start_coordinates = (51.11160771021999, 17.06008851512044)  #Replace with actual start coordinates 51.11245993415498, 17.055864466280198
-        end_coordinates = (51.0352209, 16.9678799)
         start_place = 'PasazGrunwaldzki'
         end_place = 'BielanyWroclawskie'
+        start_coordinates = (51.11160771021999, 17.06008851512044)  #start_place corordinates
+        end_coordinates = (51.0352209, 16.9678799)  #end_place coordinates
+
 
         print("Calculating route...")
 
@@ -86,8 +87,7 @@ def calculate_route(api_key, route_url, log_response=False):
 if __name__ == "__main__":
     api_key = "AIzaSyDjArNix8I0akx1uouwhcAO3743fLT6ncE"
 
-    # Replace 'YOUR_GOOGLE_MAPS_URL' with your actual Google Maps URL
-    google_maps_url = 'https://maps.app.goo.gl/V75gsHxx1otxYxoT9'
+    google_maps_url = 'https://maps.app.goo.gl/V75gsHxx1otxYxoT9'  #route url
 
     i = 0
     nu_records = 5  # how many records d
