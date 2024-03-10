@@ -4,4 +4,4 @@ This Python script uses the Google Maps API to calculate the duration of a prede
 
 ## Prerequisites
 
-Before running the script, ensure that you have the required Python packages installed. You can install them using:
+Before running the script, ensure that you have the required Python packages installed. 
