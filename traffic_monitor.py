@@ -86,7 +86,7 @@ def calculate_route(api_key, route_url, log_response=False):
 if __name__ == "__main__":
     api_key = "AIzaSyDjArNix8I0akx1uouwhcAO3743fLT6ncE"
 
-    # Replace 'YOUR_GOOGLE_MAPS_URL' with your actual Google Maps URL
+    # Replace 'YOUR_GOOGLE_MAPS_URL' with your actual Google Maps URL sds
     google_maps_url = 'https://maps.app.goo.gl/V75gsHxx1otxYxoT9'
 
     i = 0
