@@ -45,6 +45,8 @@ def calculate_route(api_key, route_url, log_response=False):
 
         start_coordinates = (51.11245993415498, 17.055864466280198)  # Replace with actual start coordinates 51.11245993415498, 17.055864466280198
         end_coordinates = (51.04044704259993, 16.96934186368963)
+        start_place = 'BielanyWroclawskie'
+        end_place = 'PasazGrunwaldzki'
 
         print("Calculating route...")
 
@@ -72,7 +74,8 @@ def calculate_route(api_key, route_url, log_response=False):
         # Save the route data to a CSV file
         with open('route_times.csv', 'a', newline='') as csvfile:
             writer = csv.writer(csvfile)
-            writer.writerow([date, time_of_day, start_coordinates, end_coordinates, minutes])
+            writer.writerow([date,day_of_week, time_of_day, start_place, end_place, minutes])
+            # save to csv in order -> date, dayofweek 0-monday 6-sunday, start place, end place, travel time in minutes
 
         print(f"Duration in traffic: {duration_in_traffic}")
 
@@ -86,7 +89,16 @@ if __name__ == "__main__":
     # Replace 'YOUR_GOOGLE_MAPS_URL' with your actual Google Maps URL
     google_maps_url = 'https://maps.app.goo.gl/V75gsHxx1otxYxoT9'
 
+    i = 0
+    nu_records = 5  # how many records
     # Run the function
-    calculate_route(api_key, google_maps_url)
+    while i < nu_records:
+        calculate_route(api_key, google_maps_url)
+        time.sleep(1)
+        i = i + 1
+        print('--------------------------------')
+        print('records iteration', i, ' to ', nu_records)
+        print('--------------------------------')
+
 
 
