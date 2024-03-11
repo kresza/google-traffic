@@ -6,6 +6,9 @@ from urllib.parse import urlparse, parse_qs
 import time
 import re
 from googlemaps import Client
+from database import Database
+from dotenv import load_dotenv
+import os
 
 
 def get_coordinates_from_url(api_key, url):
@@ -85,10 +88,16 @@ def calculate_route(api_key, route_url, log_response=False):
 
 
 if __name__ == "__main__":
-    api_key = "AIzaSyDjArNix8I0akx1uouwhcAO3743fLT6ncE"
+    load_dotenv(dotenv_path='connection.env')
+    api_key = os.getenv('API_KEY', default='')
+
+    if not api_key:
+        print("Klucz API nie został znaleziony. Sprawdź plik connection.env.")
+    else:
+        print("Znaleziono klucz API")
+
 
     google_maps_url = 'https://maps.app.goo.gl/V75gsHxx1otxYxoT9'  #route url
-
     i = 0
     nu_records = 5  # how many records d
     # Run the function
@@ -98,6 +107,27 @@ if __name__ == "__main__":
         print('--------------------------------')
         print('records iteration', i, 'to', nu_records)
         print('--------------------------------')
+    openDatabaseConnection = False
+    if openDatabaseConnection:
+        db = Database(
+            db_user='your_db_user',
+            db_password='your_db_password',
+            db_name='your_db_name',
+            db_host='your_db_host',
+            db_port='your_db_port'
+        )
+
+        try:
+            db.connect_to_database()
+            query = "SELECT * FROM your_table"
+            results = db.execute_query(query)
+            for row in results:
+                print(row)
+        finally:
+            db.close_connection()
+
+
+
 
 
 
