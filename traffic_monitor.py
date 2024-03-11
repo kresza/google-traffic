@@ -11,7 +11,6 @@ from dotenv import load_dotenv
 import os
 
 
-
 def get_coordinates_from_url(api_key, url):
     """Get start and end coordinates from a Google Maps URL."""
     gmaps: Client = googlemaps.Client(key=api_key)
@@ -45,30 +44,29 @@ def get_coordinates(gmaps, location):
         return None
 
 
-def calculate_route(api_key, start_coordinates, end_coordinates, log_response=False):
+def calculate_route(api_key, start_coordinates, end_coordinates, routName):
     try:
         gmaps = googlemaps.Client(key=api_key)
 
+        print("Calculating routes...")
 
-        print("Calculating route...")
-
-        directions_result = gmaps.directions(
+        directions_results = gmaps.directions(
             start_coordinates,
             end_coordinates,
             mode="driving",
             departure_time=datetime.now(),
+            alternatives=True,
         )
-        print("API Response:", directions_result)
-        if log_response:
-            with open('response.tmp.txt', 'w') as outfile:
-                outfile.write(json.dumps(directions_result, indent=2))
+        # FIND SHORTEST ROUTE
+        shortest_route = min(directions_results, key=lambda x: x['legs'][0]['distance']['value'])
 
-        duration_in_traffic = directions_result[0]['legs'][0]['duration_in_traffic']['text']
-        minutes = int(re.search(r'(\d+) min', duration_in_traffic).group(1))
-        origin = directions_result[0]['legs'][0]['start_address'].strip('"')
-        destination = directions_result[0]['legs'][0]['end_address'].strip('"')
-        distance = directions_result[0]['legs'][0]['distance']['text'].replace(' km', '')
+        print("API Response:", shortest_route)
 
+        duration_in_traffic = shortest_route['legs'][0]['duration_in_traffic']['text']
+        minute = int(re.search(r'(\d+) min', duration_in_traffic).group(1))
+        origin = shortest_route['legs'][0]['start_address'].strip('"')
+        destination = shortest_route['legs'][0]['end_address'].strip('"')
+        distance = shortest_route['legs'][0]['distance']['text'].replace(' km', '')
 
         day_of_week = datetime.today().weekday()
         date = datetime.today().strftime('%Y.%m.%d')
@@ -77,12 +75,11 @@ def calculate_route(api_key, start_coordinates, end_coordinates, log_response=Fa
         print(f"Route calculated. Waiting for 2 seconds...")
         time.sleep(2)
 
-        # Save the route data to a CSV file
+        # CSV file
         with open('route_times.csv', 'a', newline='') as csvfile:
             writer = csv.writer(csvfile, delimiter=',')
-            writer.writerow([date, day_of_week, time_of_day, origin.strip(), destination.strip(), distance, minutes])
-            # save to csv in order -> date, dayofweek 0-monday 6-sunday, start place, end place, travel time in minutes
-
+            writer.writerow([date, day_of_week, time_of_day, routName, distance, minute])
+            # save to csv in order -> date, dayofweek 0-monday 6-sunday, routName , travel time in minutes
 
         print(f"Origin: {origin}")
         print(f"Destination: {destination}")
@@ -98,40 +95,23 @@ if __name__ == "__main__":
     api_key = os.getenv('API_KEY', default='')
 
     if not api_key:
-        print("Klucz API nie został znaleziony. Sprawdź plik connection.env.")
+        print("API key not found. Check the connection.env file.")
     else:
-        print("Znaleziono klucz API")
+        print("API key has been found")
         google_maps_url = 'https://www.google.com/maps/dir/?api=1&origin=Pasaż+Grunwaldzki+Wrocław&destination=Bielany+Wrocławskie+Wrocław&travelmode=driving'  # route url
         start_coordinates, end_coordinates = get_coordinates_from_url(api_key, google_maps_url)
-
+        routName = 'BIELPASAZ'
         i = 0
         nu_records = 5  # how many records d
-        # Run the function
+
         while i < nu_records:
-            calculate_route(api_key, start_coordinates, end_coordinates)
+            calculate_route(api_key, start_coordinates, end_coordinates, routName)
             i = i + 1
             print('--------------------------------')
             print('records iteration', i, 'to', nu_records)
             print('--------------------------------')
             time.sleep(5)
-        openDatabaseConnection = False
-        if openDatabaseConnection:
-            db = Database(
-                db_user='your_db_user',
-                db_password='your_db_password',
-                db_name='your_db_name',
-                db_host='your_db_host',
-                db_port='your_db_port'
-            )
 
-            try:
-                db.connect_to_database()
-                query = "SELECT * FROM your_table"
-                results = db.execute_query(query)
-                for row in results:
-                    print(row)
-            finally:
-                db.close_connection()
 
 
 
