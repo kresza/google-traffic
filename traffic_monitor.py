@@ -20,8 +20,8 @@ def get_coordinates_from_url(api_key, url):
     print("Parsed URL:", parsed_url)
     print("Query Parameters:", query_params)
 
-    start_location = query_params.get('saddr', [''])[0]
-    end_location = query_params.get('daddr', [''])[0]
+    start_location = query_params.get('origin', [''])[0]
+    end_location = query_params.get('destination', [''])[0]
 
     start_coordinates = get_coordinates(gmaps, start_location)
     end_coordinates = get_coordinates(gmaps, end_location)
@@ -34,7 +34,9 @@ def get_coordinates(gmaps, location):
     try:
         geocode_result = gmaps.geocode(location)
         if not geocode_result:
-            raise Exception(f"No results found for location: {location}")
+            print(f"No results found for location: {location}")
+            return None
+
         return geocode_result[0]['geometry']['location']
     except Exception as e:
         print(f"Failed to get coordinates for location: {location}")
@@ -42,31 +44,29 @@ def get_coordinates(gmaps, location):
         return None
 
 
-def calculate_route(api_key, route_url, log_response=False):
+def calculate_route(api_key, start_coordinates, end_coordinates, routName):
     try:
         gmaps = googlemaps.Client(key=api_key)
 
-        start_place = 'PasazGrunwaldzki'
-        end_place = 'BielanyWroclawskie'
-        start_coordinates = (51.11160771021999, 17.06008851512044)  #start_place corordinates
-        end_coordinates = (51.0352209, 16.9678799)  #end_place coordinates
+        print("Calculating routes...")
 
-
-        print("Calculating route...")
-
-        directions_result = gmaps.directions(
+        directions_results = gmaps.directions(
             start_coordinates,
             end_coordinates,
             mode="driving",
             departure_time=datetime.now(),
+            alternatives=True,
         )
-        print("API Response:", directions_result)
-        if log_response:
-            with open('response.tmp.txt', 'w') as outfile:
-                outfile.write(json.dumps(directions_result, indent=2))
+        # FIND SHORTEST ROUTE
+        shortest_route = min(directions_results, key=lambda x: x['legs'][0]['distance']['value'])
 
-        duration_in_traffic = directions_result[0]['legs'][0]['duration_in_traffic']['text']
-        minutes = int(re.search(r'(\d+) min', duration_in_traffic).group(1))
+        print("API Response:", shortest_route)
+
+        duration_in_traffic = shortest_route['legs'][0]['duration_in_traffic']['text']
+        minute = int(re.search(r'(\d+) min', duration_in_traffic).group(1))
+        origin = shortest_route['legs'][0]['start_address'].strip('"')
+        destination = shortest_route['legs'][0]['end_address'].strip('"')
+        distance = shortest_route['legs'][0]['distance']['text'].replace(' km', '')
 
         day_of_week = datetime.today().weekday()
         date = datetime.today().strftime('%Y.%m.%d')
@@ -75,12 +75,15 @@ def calculate_route(api_key, route_url, log_response=False):
         print(f"Route calculated. Waiting for 2 seconds...")
         time.sleep(2)
 
-        # Save the route data to a CSV file
+        # CSV file
         with open('route_times.csv', 'a', newline='') as csvfile:
-            writer = csv.writer(csvfile)
-            writer.writerow([date,day_of_week, time_of_day, start_place, end_place, minutes])
-            # save to csv in order -> date, dayofweek 0-monday 6-sunday, start place, end place, travel time in minutes
+            writer = csv.writer(csvfile, delimiter=',')
+            writer.writerow([date, day_of_week, time_of_day, routName, distance, minute])
+            # save to csv in order -> date, dayofweek 0-monday 6-sunday, routName , travel time in minutes
 
+        print(f"Origin: {origin}")
+        print(f"Destination: {destination}")
+        print(f"Distance: {distance} km")
         print(f"Duration in traffic: {duration_in_traffic}")
 
     except Exception as e:
@@ -92,39 +95,24 @@ if __name__ == "__main__":
     api_key = os.getenv('API_KEY', default='')
 
     if not api_key:
-        print("Klucz API nie został znaleziony. Sprawdź plik connection.env.")
+        print("API key not found. Check the connection.env file.")
     else:
-        print("Znaleziono klucz API")
+        print("API key has been found")
+        google_maps_url = 'https://www.google.com/maps/dir/?api=1&origin=Pasaż+Grunwaldzki+Wrocław&destination=Bielany+Wrocławskie+Wrocław&travelmode=driving'  # route url
+        start_coordinates, end_coordinates = get_coordinates_from_url(api_key, google_maps_url)
+        routName = 'BIELPASAZ'
+        i = 0
+        nu_records = 5  # how many records
+
+        while i < nu_records:
+            calculate_route(api_key, start_coordinates, end_coordinates, routName)
+            i = i + 1
+            print('--------------------------------')
+            print('records iteration', i, 'to', nu_records)
+            print('--------------------------------')
+            time.sleep(5)
 
 
-    google_maps_url = 'https://maps.app.goo.gl/V75gsHxx1otxYxoT9'  #route url
-    i = 0
-    nu_records = 5  # how many records ?
-    # Run the function
-    while i < nu_records:
-        calculate_route(api_key, google_maps_url)
-        i = i + 1
-        print('--------------------------------')
-        print('records iteration', i, 'to', nu_records)
-        print('--------------------------------')
-    openDatabaseConnection = False
-    if openDatabaseConnection:
-        db = Database(
-            db_user='your_db_user',
-            db_password='your_db_password',
-            db_name='your_db_name',
-            db_host='your_db_host',
-            db_port='your_db_port'
-        )
-
-        try:
-            db.connect_to_database()
-            query = "SELECT * FROM your_table"
-            results = db.execute_query(query)
-            for row in results:
-                print(row)
-        finally:
-            db.close_connection()
 
 
 
