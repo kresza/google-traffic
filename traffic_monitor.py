@@ -99,7 +99,7 @@ if __name__ == "__main__":
 
     google_maps_url = 'https://maps.app.goo.gl/V75gsHxx1otxYxoT9'  #route url
     i = 0
-    nu_records = 5  # how many records d
+    nu_records = 5  # how many records ?
     # Run the function
     while i < nu_records:
         calculate_route(api_key, google_maps_url)
