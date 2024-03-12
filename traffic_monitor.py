@@ -1,6 +1,7 @@
 import googlemaps
 import json
 import csv
+import mysql.connector
 from datetime import datetime
 from urllib.parse import urlparse, parse_qs
 import time
@@ -44,7 +45,7 @@ def get_coordinates(gmaps, location):
         return None
 
 
-def calculate_route(api_key, start_coordinates, end_coordinates, routName):
+def calculate_route(api_key, start_coordinates, end_coordinates, routName, connection):
     try:
         gmaps = googlemaps.Client(key=api_key)
 
@@ -57,7 +58,7 @@ def calculate_route(api_key, start_coordinates, end_coordinates, routName):
             departure_time=datetime.now(),
             alternatives=True,
         )
-        # FIND SHORTEST ROUTE
+        # ZNAJDŹ NAJKRÓTSZĄ TRASĘ
         shortest_route = min(directions_results, key=lambda x: x['legs'][0]['distance']['value'])
 
         print("API Response:", shortest_route)
@@ -75,11 +76,14 @@ def calculate_route(api_key, start_coordinates, end_coordinates, routName):
         print(f"Route calculated. Waiting for 2 seconds...")
         time.sleep(2)
 
-        # CSV file
-        with open('route_times.csv', 'a', newline='') as csvfile:
-            writer = csv.writer(csvfile, delimiter=',')
-            writer.writerow([date, day_of_week, time_of_day, routName, distance, minute])
-            # save to csv in order -> date, dayofweek 0-monday 6-sunday, routName , travel time in minutes
+        # ZAPIS DO BAZY DANYCH
+        cursor = connection.cursor()
+        insert_query = """
+        INSERT INTO traffic (data, dzien_tygodnia, godzina, nazwa_trasy, dystans, czas_minut)
+        VALUES (%s, %s, %s, %s, %s, %s);
+        """
+        cursor.execute(insert_query, (date, day_of_week, time_of_day, routName, distance, minute))
+        connection.commit()
 
         print(f"Origin: {origin}")
         print(f"Destination: {destination}")
@@ -94,6 +98,8 @@ if __name__ == "__main__":
     load_dotenv(dotenv_path='connection.env')
     api_key = os.getenv('API_KEY', default='')
 
+    connection = mysql.connector.connect(user='admin', password='admin', database='googletrafic', host='127.0.0.1', port='3306')  # Uzupełnij swoimi danymi
+
     if not api_key:
         print("API key not found. Check the connection.env file.")
     else:
@@ -105,12 +111,14 @@ if __name__ == "__main__":
         nu_records = 5  # how many records d
 
         while i < nu_records:
-            calculate_route(api_key, start_coordinates, end_coordinates, routName)
+            calculate_route(api_key, start_coordinates, end_coordinates, routName, connection)
             i = i + 1
             print('--------------------------------')
             print('records iteration', i, 'to', nu_records)
             print('--------------------------------')
             time.sleep(5)
+    
+    connection.close()
 
 
 
