@@ -116,7 +116,7 @@ if __name__ == "__main__":
             print('--------------------------------')
             print('records iteration', i, 'to', nu_records)
             print('--------------------------------')
-            time.sleep(5)
+            time.sleep(1800)
     
     connection.close()
 
