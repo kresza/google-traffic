@@ -102,7 +102,7 @@ if __name__ == "__main__":
         start_coordinates, end_coordinates = get_coordinates_from_url(api_key, google_maps_url)
         routName = 'BIELPASAZ'
         i = 0
-        nu_records = 5  # how many records ?
+        nu_records = 5  # how many records ? ???
 
         while i < nu_records:
             calculate_route(api_key, start_coordinates, end_coordinates, routName)
