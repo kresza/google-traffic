@@ -107,16 +107,17 @@ if __name__ == "__main__":
         google_maps_url = 'https://www.google.com/maps/dir/?api=1&origin=Pasaż+Grunwaldzki+Wrocław&destination=Bielany+Wrocławskie+Wrocław&travelmode=driving'  # route url
         start_coordinates, end_coordinates = get_coordinates_from_url(api_key, google_maps_url)
         routName = 'BIELPASAZ'
-        i = 0
-        nu_records = 5  # how many records d
+        flag = True
+        # i = 0
+        # nu_records = 5  # how many records d
 
-        while i < nu_records:
+        while flag:
             calculate_route(api_key, start_coordinates, end_coordinates, routName, connection)
-            i = i + 1
-            print('--------------------------------')
-            print('records iteration', i, 'to', nu_records)
-            print('--------------------------------')
-            time.sleep(1800)
+            # i = i + 1
+            # print('--------------------------------')
+            # print('records iteration', i, 'to', nu_records)
+            # print('--------------------------------')
+            time.sleep(3600)
     
     connection.close()
 
