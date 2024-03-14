@@ -73,8 +73,8 @@ def calculate_route(api_key, start_coordinates, end_coordinates, routName, conne
         date = datetime.today().strftime('%Y.%m.%d')
         time_of_day = datetime.now().strftime("%H:%M")
 
-        print(f"Route calculated. Waiting for 2 seconds...")
-        time.sleep(2)
+        # print(f"Route calculated. Waiting for 2 seconds...")
+        # time.sleep(2)
 
         # ZAPIS DO BAZY DANYCH
         cursor = connection.cursor()
