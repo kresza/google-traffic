@@ -104,9 +104,9 @@ if __name__ == "__main__":
         print("API key not found. Check the connection.env file.")
     else:
         print("API key has been found")
-        google_maps_url = 'https://www.google.com/maps/dir/?api=1&origin=Pasaż+Grunwaldzki+Wrocław&destination=Bielany+Wrocławskie+Wrocław&travelmode=driving'  # route url
+        google_maps_url = 'https://www.google.com/maps/dir/?api=1&origin=Brama+Grabiszyńska+Wrocław&destination=Dolnośląski+Ośrodek+Ruchu+Drogowego+Wrocław&travelmode=driving'  # route url
         start_coordinates, end_coordinates = get_coordinates_from_url(api_key, google_maps_url)
-        routName = 'BIELPASAZ'
+        routName = 'DORDBGRABISZYN'
         flag = True
         # i = 0
         # nu_records = 5  # how many records d
