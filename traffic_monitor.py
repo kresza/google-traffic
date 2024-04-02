@@ -93,30 +93,36 @@ def calculate_route(api_key, start_coordinates, end_coordinates, routName, conne
     except Exception as e:
         print(f"Error calculating route: {e}")
 
+def get_routename(url):
+    if 'Wrocław+Fashion+Outlet' in url and 'Most+Grunwaldzki' in url:
+        return 'WFO-MG'
+    elif 'Brama+Grabiszyńska' in url and 'Dolnośląski+Ośrodek+Ruchu+Drogowego' in url:
+        return 'BG-DORD'
+    else:
+        return 'UnknownRoute'
 
 if __name__ == "__main__":
     load_dotenv(dotenv_path='connection.env')
     api_key = os.getenv('API_KEY', default='')
 
-    connection = mysql.connector.connect(user='admin', password='Admin123', database='Googletraffic', host='34.118.70.238', port='3306')  # Uzupełnij swoimi danymi
+    connection = mysql.connector.connect(user='test', password='test1234', database='Googletraffic', host='34.118.70.238', port='3306')  # Uzupełnij swoimi danymi
 
     if not api_key:
         print("API key not found. Check the connection.env file.")
     else:
         print("API key has been found")
-        google_maps_url = 'https://www.google.com/maps/dir/?api=1&origin=Brama+Grabiszyńska+Wrocław&destination=Dolnośląski+Ośrodek+Ruchu+Drogowego+Wrocław&travelmode=driving'  # route url
-        start_coordinates, end_coordinates = get_coordinates_from_url(api_key, google_maps_url)
-        routName = 'DORDBGRABISZYN'
+        google_maps_urls = [
+            'https://www.google.com/maps/dir/?api=1&origin=Brama+Grabiszyńska+Wrocław&destination=Dolnośląski+Ośrodek+Ruchu+Drogowego+Wrocław&travelmode=driving'  # route url
+            'https://www.google.com/maps/dir/?api=1&origin=Wrocław+Fashion+Outlet,+Graniczna+2&destination=Most+Grunwaldzki,+Wrocław&travelmode=driving'
+        ]
+        routName = 'manualrouteName'
         flag = True
-        # i = 0
-        # nu_records = 5  # how many records d
 
         while flag:
-            calculate_route(api_key, start_coordinates, end_coordinates, routName, connection)
-            # i = i + 1
-            # print('--------------------------------')
-            # print('records iteration', i, 'to', nu_records)
-            # print('--------------------------------')
+            for google_maps_url in google_maps_urls:
+                routName = get_routename(google_maps_url)
+                start_coordinates, end_coordinates = get_coordinates_from_url(api_key, google_maps_url)
+                calculate_route(api_key, start_coordinates, end_coordinates, routName, connection)
             time.sleep(3600)
     
     connection.close()
