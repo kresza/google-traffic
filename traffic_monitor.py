@@ -94,9 +94,9 @@ def calculate_route(api_key, start_coordinates, end_coordinates, routName, conne
         print(f"Error calculating route: {e}")
 
 def get_routename(url):
-    if 'Wrocław+Fashion+Outlet' in url and 'Most+Grunwaldzki' in url:
+    if 'Wrocław+Fashion+Outlet' in url or 'Most+Grunwaldzki' in url:
         return 'WFO-MG'
-    elif 'Brama+Grabiszyńska' in url and 'Dolnośląski+Ośrodek+Ruchu+Drogowego' in url:
+    elif 'Brama+Grabiszyńska' in url or 'Dolnośląski+Ośrodek+Ruchu+Drogowego' in url:
         return 'BG-DORD'
     else:
         return 'UnknownRoute'
