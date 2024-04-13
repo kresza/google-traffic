@@ -7,7 +7,6 @@ from urllib.parse import urlparse, parse_qs
 import time
 import re
 from googlemaps import Client
-from database import Database
 from dotenv import load_dotenv
 import os
 
@@ -93,27 +92,37 @@ def calculate_route(api_key, start_coordinates, end_coordinates, routName, conne
     except Exception as e:
         print(f"Error calculating route: {e}")
 
+
 def get_routename(url):
     if 'Wrocław+Fashion+Outlet' in url or 'Most+Grunwaldzki' in url:
         return 'WFO-MG'
     elif 'Brama+Grabiszyńska' in url or 'Dolnośląski+Ośrodek+Ruchu+Drogowego' in url:
         return 'BG-DORD'
+    elif 'Wrocławski+Rower+Miejski' in url or 'Zwycięska' in url:
+        return 'ZWYCIESKA'
+    elif 'ZOO' in url or 'Uniwersytet+Wrocławski' in url:
+        return 'ZOO-UWR'
+    elif 'Pasaż+Grunwaldzki' in url or 'Bielany+Wrocławskie+Wrocław' in url:
+        return 'BIELPASAZ'
     else:
         return 'UnknownRoute'
+
 
 if __name__ == "__main__":
     load_dotenv(dotenv_path='connection.env')
     api_key = os.getenv('API_KEY', default='')
 
-    connection = mysql.connector.connect(user='admin', password='Admin123', database='Googletraffic', host='34.118.70.238', port='3306')  # Uzupełnij swoimi danymi
-
+    connection = mysql.connector.connect(user='admin', password='Admin123', database='Googletraffic', host='', port='3306')  # Uzupełnij swoimi danymi
     if not api_key:
         print("API key not found. Check the connection.env file.")
     else:
         print("API key has been found")
         google_maps_urls = [
-            'https://www.google.com/maps/dir/?api=1&origin=Brama+Grabiszyńska+Wrocław&destination=Dolnośląski+Ośrodek+Ruchu+Drogowego+Wrocław&travelmode=driving'  # route url
-            'https://www.google.com/maps/dir/?api=1&origin=Wrocław+Fashion+Outlet,+Graniczna+2&destination=Most+Grunwaldzki,+Wrocław&travelmode=driving'
+            'https://www.google.com/maps/dir/?api=1&origin=Brama+Grabiszyńska+Wrocław&destination=Dolnośląski+Ośrodek+Ruchu+Drogowego+Wrocław&travelmode=driving',
+            'https://www.google.com/maps/dir/?api=1&origin=Wrocław+Fashion+Outlet,+Graniczna+2&destination=Most+Grunwaldzki,+Wrocław&travelmode=driving',
+            'https://www.google.com/maps/dir/?api=1&origin=Wrocławski+Rower+Miejski+-+15116+%22Zwycięska%2FAgrestowa%22,+Zwycięska,+53-033+Wrocław&destination=Wrocławski+Rower+Miejski+-+15117+%22al.+Karkonoska%2FJeździecka%22&travelmode=driving',
+            'https://www.google.com/maps/dir/?api=1&origin=ZOO+Wrocław+sp.z+o.o.,+Zygmunta+Wróblewskiego+1-5,+51-618+Wrocław&destination=Uniwersytet+Wrocławski,+plac+Uniwersytecki+1,+50-137+Wrocław&travelmode=driving',
+            'https://www.google.com/maps/dir/?api=1&origin=Pasaż+Grunwaldzki+Wrocław&destination=Bielany+Wrocławskie+Wrocław&travelmode=driving',
         ]
         routName = 'manualrouteName'
         flag = True
@@ -124,12 +133,5 @@ if __name__ == "__main__":
                 start_coordinates, end_coordinates = get_coordinates_from_url(api_key, google_maps_url)
                 calculate_route(api_key, start_coordinates, end_coordinates, routName, connection)
             time.sleep(3600)
-    
+
     connection.close()
-
-
-
-
-
-
-
