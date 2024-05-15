@@ -57,7 +57,7 @@ def calculate_route(api_key, start_coordinates, end_coordinates, routName, conne
             departure_time=datetime.now(),
             alternatives=True,
         )
-        # ZNAJDŹ NAJKRÓTSZĄ TRASĘ
+        # ZNAJDOWANIE NAJKRÓTSZEJ TRASY
         shortest_route = min(directions_results, key=lambda x: x['legs'][0]['distance']['value'])
 
         print("API Response:", shortest_route)
