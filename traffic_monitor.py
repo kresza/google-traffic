@@ -106,7 +106,7 @@ if __name__ == "__main__":
     load_dotenv(dotenv_path='connection.env')
     api_key = os.getenv('API_KEY', default='')
 
-    connection = mysql.connector.connect(user='admin', password='Admin123', database='Googletraffic', host='', port='3306')  # Uzupełnij swoimi danymi
+    connection = mysql.connector.connect(user='admin', password='Admin123', database='Googletraffic', host='', port='3306')
     if not api_key:
         print("API key not found. Check the connection.env file.")
     else:
