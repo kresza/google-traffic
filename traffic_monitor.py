@@ -10,7 +10,6 @@ from googlemaps import Client
 from dotenv import load_dotenv
 import os
 
-
 def get_coordinates_from_url(api_key, url):
     """Get start and end coordinates from a Google Maps URL."""
     gmaps: Client = googlemaps.Client(key=api_key)
@@ -28,7 +27,6 @@ def get_coordinates_from_url(api_key, url):
 
     return start_coordinates, end_coordinates
 
-
 def get_coordinates(gmaps, location):
     """Get coordinates (latitude, longitude) for a given location using Google Maps API."""
     try:
@@ -43,7 +41,6 @@ def get_coordinates(gmaps, location):
         print(f"Error: {e}")
         return None
 
-
 def calculate_route(api_key, start_coordinates, end_coordinates, routName, connection):
     try:
         gmaps = googlemaps.Client(key=api_key)
@@ -57,6 +54,7 @@ def calculate_route(api_key, start_coordinates, end_coordinates, routName, conne
             departure_time=datetime.now(),
             alternatives=True,
         )
+
         # ZNAJDOWANIE NAJKRÓTSZEJ TRASY
         shortest_route = min(directions_results, key=lambda x: x['legs'][0]['distance']['value'])
 
@@ -71,9 +69,6 @@ def calculate_route(api_key, start_coordinates, end_coordinates, routName, conne
         day_of_week = datetime.today().weekday()
         date = datetime.today().strftime('%Y.%m.%d')
         time_of_day = datetime.now().strftime("%H:%M")
-
-        # print(f"Route calculated. Waiting for 2 seconds...")
-        # time.sleep(2)
 
         # ZAPIS DO BAZY DANYCH
         cursor = connection.cursor()
@@ -91,7 +86,6 @@ def calculate_route(api_key, start_coordinates, end_coordinates, routName, conne
 
     except Exception as e:
         print(f"Error calculating route: {e}")
-
 
 def get_routename(url):
     if 'Wrocław+Fashion+Outlet' in url or 'Most+Grunwaldzki' in url:
