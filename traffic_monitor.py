@@ -34,8 +34,8 @@ def get_coordinates(gmaps, location):
         if not geocode_result:
             print(f"No results found for location: {location}")
             return None
-
         return geocode_result[0]['geometry']['location']
+
     except Exception as e:
         print(f"Failed to get coordinates for location: {location}")
         print(f"Error: {e}")
@@ -100,7 +100,6 @@ def get_routename(url):
         return 'BIELPASAZ'
     else:
         return 'UnknownRoute'
-
 
 if __name__ == "__main__":
     load_dotenv(dotenv_path='connection.env')
